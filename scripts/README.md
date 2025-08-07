@@ -17,6 +17,7 @@ Note that there is currently only support for one such device.
 The information about the Raspberry Pi device are stored inside the .rpi directory in the home of the user who calls rpiSetup.
 
 `rpi ip address`: IP address of the Raspberry Pi device to communicate with.
+
 `username`: The name of the user to use on the Raspberry Pi device.
 
 ## rpiGetAccess
