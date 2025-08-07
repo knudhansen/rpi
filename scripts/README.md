@@ -87,3 +87,7 @@ This bash function makes a video on the Raspberry Pi setup using [rpiSetup](#rpi
 * check that the Raspberry Pi device has been setup when calling the other functions
 * have a cleaner way of handling the files on the Raspberry Pi
 * have a handler to make sure that concurrent uses of the Raspberry Pi do not collide
+* maybe make the functions work on rpi as on remote host... Or is it too much abstraction?
+* cron setup helper functions
+* make sure that there is space enough before recording a video. Investigate how much space is needed
+* investigate what additional parameter are needed for the video (resolution and exposure control)
