@@ -68,7 +68,7 @@ This bash function takes a photo on the Raspberry Pi setup using [rpiSetup](#rpi
 
 `file`: name of the file that the photo should be saved as.
 
-# rpiCaptureLive
+## rpiCaptureLive
 
 ```
 rpiCaptureLive <file> <time in seconds>
