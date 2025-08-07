@@ -31,9 +31,51 @@ This bash function prints on stdout the access string <username>@<ip address> fo
 ## rpissh
 
 ```
-rpissh [command]
+rpissh [<command>]
 ```
 
 This bash function is used to ssh to the Raspberry Pi that has been setup using [rpiSetup](#rpiSetup).
 
 `command`: optional command to execute on the Raspberry Pi device. If command is passed, then the command is executed on the Raspberry Pi device (make sure to use quotes and escape elements in the command as needed). If command is omitted, a shell will be created on the Raspberry Pi device allowing interaction with it.
+
+## rpirsyncTo
+
+```
+rpirsyncTo <path>
+```
+
+This bash function rsyncs from the machine that the function is run on and to the Raspberry Pi setup using [rpiSetup](#rpiSetup).
+
+`path`: path that should be rsynce'ed.
+
+## rpirsyncFrom 
+
+```
+rpirsyncFrom <path>
+```
+
+This bash function rsyncs from the Raspberry Pi setup using [rpiSetup](#rpiSetup) to the machine that the function is run on.
+
+`path`: path that should be rsynce'ed.
+
+## rpiCaptureStill
+
+```
+rpiCaptureStill <file>
+```
+
+This bash function takes a photo on the Raspberry Pi setup using [rpiSetup](#rpiSetup) and transfers the photo back to the machine running the function.
+
+`file`: name of the file that the photo should be saved as.
+
+# rpiCaptureLive
+
+```
+rpiCaptureLive <file> <time in seconds>
+```
+
+This bash function makes a video on the Raspberry Pi setup using [rpiSetup](#rpiSetup) and transfers the video back to the machine running the function.
+
+`file`: name of the file that the video should be saved as.
+
+`time in seconds`: number of seconds that the video should be recorded for.
