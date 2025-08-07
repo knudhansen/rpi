@@ -1,0 +1,51 @@
+RPI_DIR="~/.rpi"
+
+function rpiSetup {
+    local ip=$1
+    local username=$2
+
+    mkdir -p $RPI_DIR
+    echo $ip > $RPI_DIR/rpi.ip
+    echo $username > $RPI_DIR/rpi.username
+    echo "${username}@${ip}" > $RPI_DIR/rpi.access
+}
+
+function rpiGetAccess {
+    cat $RPI_DIR/rpi.access
+}
+
+function rpissh {
+    ssh $(rpiGetAccess) $@
+}
+
+function rpirsyncTo {
+    local file=$1
+
+    rsync -avH $file $(rpiGetAccess):~/$file
+}
+
+function rpirsyncFrom {
+    local file=$1
+
+    rsync -avH $(rpiGetAccess):~/$file $file
+}
+
+function rpiCaptureStill {
+    local file=$1
+
+    # have rpi take the photo
+    rpissh "rpicam-still -o $file" >/dev/null 2>/dev/null
+    # get it from rpi
+    rpirsyncFrom $file >/dev/null 2>/dev/null
+}
+
+function rpiCaptureLive {
+    local file=$1
+    local timeSec=$2
+
+    # have rpi make a video
+    rpissh "rm $file"
+    rpissh "rpicam-vid -t $(($timeSec * 1000)) --codec libav --libav-format mp4 -o $file"
+    # get it from rpi
+    rpirsyncFrom $file
+}
