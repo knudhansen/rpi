@@ -16,8 +16,8 @@ Note that there is currently only support for one such device.
 
 The information about the Raspberry Pi device are stored inside the .rpi directory in the home of the user who calls rpiSetup.
 
-rpi_ip_address: IP address of the Raspberry Pi device to communicate with.
-username: The name of the user to use on the Raspberry Pi device.
+`rpi ip address`: IP address of the Raspberry Pi device to communicate with.
+`username`: The name of the user to use on the Raspberry Pi device.
 
 ## rpiGetAccess
 
@@ -35,4 +35,4 @@ rpissh [command]
 
 This bash function is used to ssh to the Raspberry Pi that has been setup using [rpiSetup](#rpiSetup).
 
-command: optional command to execute on the Raspberry Pi device. If command is passed, then the command is executed on the Raspberry Pi device (make sure to use quotes and escape elements in the command as needed). If command is omitted, a shell will be created on the Raspberry Pi device allowing interaction with it.
+`command`: optional command to execute on the Raspberry Pi device. If command is passed, then the command is executed on the Raspberry Pi device (make sure to use quotes and escape elements in the command as needed). If command is omitted, a shell will be created on the Raspberry Pi device allowing interaction with it.
