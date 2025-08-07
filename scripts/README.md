@@ -1,6 +1,8 @@
 # User guide
 
-FIXME: empty for now
+The bash functions provided are simple wrappers that make it possible to access a *single* Raspberry Pi device without having to repeatedly specify the device's address and user.
+
+To do so, first call the [rpiSetup](#rpiSetup) function with the IP of the Raspberry Pi device and the username to use on it. Once this is done, the remaining functions described in the [reference](#Reference) section can be used.
 
 # Reference
 
@@ -79,3 +81,9 @@ This bash function makes a video on the Raspberry Pi setup using [rpiSetup](#rpi
 `file`: name of the file that the video should be saved as.
 
 `time in seconds`: number of seconds that the video should be recorded for.
+
+# Improvement list
+
+* check that the Raspberry Pi device has been setup when calling the other functions
+* have a cleaner way of handling the files on the Raspberry Pi
+* have a handler to make sure that concurrent uses of the Raspberry Pi do not collide
