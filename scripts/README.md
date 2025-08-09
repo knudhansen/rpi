@@ -84,10 +84,10 @@ This bash function makes a video on the Raspberry Pi setup using [rpiSetup](#rpi
 
 `time in seconds`: number of seconds that the video should be recorded for.
 
-### rpiSchedAddDailyVideo
+### rpiSchedVideoAddDaily
 
 ```
-rpiSchedAddDailyVideo <time as HH:MM> <duration in seconds>
+rpiSchedVideoAddDaily <time as HH:MM> <duration in seconds>
 ```
 
 This function schedules a video of <duration in seconds> to be recorded daily at HH:MM
@@ -97,10 +97,10 @@ This function schedules a video of <duration in seconds> to be recorded daily at
 
 `duration in seconds`: number of seconds to record the video for
 
-### rpiSchedListDailyVideo
+### rpiSchedVideoListDaily
 
 ```
-rpiSchedListDailyVideo
+rpiSchedVideoListDaily
 ```
 
 Lists the daily scheduled video captures. The format of the output is e.g.
@@ -110,10 +110,10 @@ Lists the daily scheduled video captures. The format of the output is e.g.
 23:37 7      -- 37 23 * * * raspberrypi . ~/rpi.source >>/home/raspberrypi/.rpi/rpi.log 2>&1 && rpiCaptureVideo rpicamvid_2025_08_09_Aug_08_7 7 >>/home/raspberrypi/.rpi/rpi.log 2>&1
 ```
 
-### rpiSchedRemoveDailyVideo
+### rpiSchedVideoRemoveDaily
 
 ```
-rpiSchedRemoveDailyVideo <time as HH:MM> <duration in seconds>
+rpiSchedVideoRemoveDaily <time as HH:MM> <duration in seconds>
 ```
 
 Remove one scheduled daily video specified by the same parameters as were used to create it.
