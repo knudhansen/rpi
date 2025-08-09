@@ -136,9 +136,10 @@ FIXME
 * investigate what additional parameter are needed for the video (resolution and exposure control)
 * fail when trying to create the same schedule twice
 * warning when adding a schedule overlaping with another schedule
-* cleanup command naming for schedule
 * place the scheduled video files somewhere a bit cleaner
+* make the calls from host to rpi a bit less stupid: i.e. use FUNCNAME instead of duplicating it in ssh
 * add a function to fetch the scheduled videos (maybe including deleting them...)
 * DONE -- check that the Raspberry Pi device has been setup when calling the other functions
 * DONE -- have a handler to make sure that concurrent uses of the Raspberry Pi do not collide
 * DONE -- cron setup helper functions
+* DONE -- cleanup command naming for schedule

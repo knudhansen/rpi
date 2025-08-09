@@ -73,22 +73,22 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 	rpirsyncFrom $file
     }
 
-    rpiSchedAddDailyVideo() {
+    rpiSchedVideoAddDaily() {
 	local time=$1
 	local durationSec=$2
 
-	rpissh "rpiSchedAddDailyVideo $time $durationSec"
+	rpissh "rpiSchedVideoAddDaily $time $durationSec"
     }
 
-    rpiSchedListDailyVideo() {
-	rpissh "rpiSchedListDailyVideo"
+    rpiSchedVideoListDaily() {
+	rpissh "rpiSchedVideoListDaily"
     }
 
-    rpiSchedRemoveDailyVideo() {
+    rpiSchedVideoRemoveDaily() {
 	local time=$1
 	local durationSec=$2
 
-	rpissh "rpiSchedRemoveDailyVideo $time $durationSec"
+	rpissh "rpiSchedVideoRemoveDaily $time $durationSec"
     }
 
 else
@@ -97,7 +97,6 @@ else
 
     RPICAM_FLOCK="$RPI_DIR/rpicam.flock"
     RPI_LOG="$RPI_DIR/rpi.log"
-    RPI_SCHED_VIDEO_CRON_FILE_PREFIX="/etc/cron.d/rpicam_"
 
     mkdir -p $RPI_DIR
 
@@ -119,6 +118,8 @@ else
 	rpiLibcameravid -t $(($timeSec * 1000)) --codec libav --libav-format mp4 -o $file
     }
 
+    RPI_SCHED_VIDEO_CRON_FILE_PREFIX="/etc/cron.d/rpicam_"
+
     rpiSchedVideoCronFileName() {
 	local time=$1
 	local durationSec=$2
@@ -129,7 +130,7 @@ else
 	echo "${RPI_SCHED_VIDEO_CRON_FILE_PREFIX}${timeHours}_${timeMinutes}_${durationSec}"
     }
 
-    rpiSchedAddDailyVideo() {
+    rpiSchedVideoAddDaily() {
 	local time=$1
 	local durationSec=$2
 
@@ -142,7 +143,7 @@ else
 	echo "$cronSchedule $runningUser . ~/$(basename $BASH_SOURCE) >>$RPI_LOG 2>&1 && rpiCaptureVideo $(date +rpicamvid_%Y_%m_%d_%h_%m_$durationSec) $durationSec >>$RPI_LOG 2>&1" | sudo tee $(rpiSchedVideoCronFileName $time $durationSec) >/dev/null
     }
 
-    rpiSchedListDailyVideo() {
+    rpiSchedVideoListDaily() {
 	local filePrefix=$(basename ${RPI_SCHED_VIDEO_CRON_FILE_PREFIX})
 	local fileDir=$(dirname ${RPI_SCHED_VIDEO_CRON_FILE_PREFIX})
 	for filePath in $(find $fileDir -name "$filePrefix*"); do
@@ -155,7 +156,7 @@ else
 	done
     }
 
-    rpiSchedRemoveDailyVideo() {
+    rpiSchedVideoRemoveDaily() {
 	local time=$1
 	local durationSec=$2
 
