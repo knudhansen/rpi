@@ -94,6 +94,7 @@ This function schedules a video of <duration in seconds> to be recorded daily at
 
 `time as HH:MM`: time at which a video should be recorded every day. Format is hours (24 hour notation) and
                  minutes, e.g. 23:39.
+
 `duration in seconds`: number of seconds to record the video for
 
 ### rpiSchedListDailyVideo
@@ -119,6 +120,7 @@ Remove one scheduled daily video specified by the same parameters as were used t
 The values of the parameter are also presented when using the (#rpiSchedListDailyVideo) command.
 
 `time as HH:MM`: time at which a video should be recorded every day. Format is hours (24 hour notation) and minutes, e.g. 23:39.
+
 `duration in seconds`: number of seconds to record the video for
 
 ## Raspberry Pi functions
