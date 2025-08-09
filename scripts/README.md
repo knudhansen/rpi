@@ -6,7 +6,9 @@ To do so, first call the [rpiSetup](#rpiSetup) function with the IP of the Raspb
 
 # Reference
 
-## rpiSetup
+## Host functions
+
+### rpiSetup
 
 ```
 rpiSetup <rpi ip address> <username>
@@ -22,7 +24,7 @@ The information about the Raspberry Pi device are stored inside the .rpi directo
 
 `username`: The name of the user to use on the Raspberry Pi device.
 
-## rpiGetAccess
+### rpiGetAccess
 
 ```
 rpiGetAccess
@@ -30,7 +32,7 @@ rpiGetAccess
 
 This bash function prints on stdout the access string <username>@<ip address> for the Raspberry Pi device that has been setup using [rpiSetup](#rpiSetup). It is mainly thought of as an internal function.
 
-## rpissh
+### rpissh
 
 ```
 rpissh [<command>]
@@ -40,7 +42,7 @@ This bash function is used to ssh to the Raspberry Pi that has been setup using 
 
 `command`: optional command to execute on the Raspberry Pi device. If command is passed, then the command is executed on the Raspberry Pi device (make sure to use quotes and escape elements in the command as needed). If command is omitted, a shell will be created on the Raspberry Pi device allowing interaction with it.
 
-## rpirsyncTo
+### rpirsyncTo
 
 ```
 rpirsyncTo <path>
@@ -50,7 +52,7 @@ This bash function rsyncs from the machine that the function is run on and to th
 
 `path`: path that should be rsynce'ed.
 
-## rpirsyncFrom 
+### rpirsyncFrom
 
 ```
 rpirsyncFrom <path>
@@ -60,20 +62,20 @@ This bash function rsyncs from the Raspberry Pi setup using [rpiSetup](#rpiSetup
 
 `path`: path that should be rsynce'ed.
 
-## rpiCaptureStill
+### rpiCapturePhoto
 
 ```
-rpiCaptureStill <file>
+rpiCapturePhoto <file>
 ```
 
 This bash function takes a photo on the Raspberry Pi setup using [rpiSetup](#rpiSetup) and transfers the photo back to the machine running the function.
 
 `file`: name of the file that the photo should be saved as.
 
-## rpiCaptureLive
+### rpiCaptureVideo
 
 ```
-rpiCaptureLive <file> <time in seconds>
+rpiCaptureVideo <file> <time in seconds>
 ```
 
 This bash function makes a video on the Raspberry Pi setup using [rpiSetup](#rpiSetup) and transfers the video back to the machine running the function.
@@ -82,12 +84,57 @@ This bash function makes a video on the Raspberry Pi setup using [rpiSetup](#rpi
 
 `time in seconds`: number of seconds that the video should be recorded for.
 
+### rpiSchedAddDailyVideo
+
+```
+rpiSchedAddDailyVideo <time as HH:MM> <duration in seconds>
+```
+
+This function schedules a video of <duration in seconds> to be recorded daily at HH:MM
+
+`time as HH:MM`: time at which a video should be recorded every day. Format is hours (24 hour notation) and
+                 minutes, e.g. 23:39.
+`duration in seconds`: number of seconds to record the video for
+
+### rpiSchedListDailyVideo
+
+```
+rpiSchedListDailyVideo
+```
+
+Lists the daily scheduled video captures. The format of the output is e.g.
+
+```
+23:39 12     -- 39 23 * * * raspberrypi . ~/rpi.source >>/home/raspberrypi/.rpi/rpi.log 2>&1 && rpiCaptureVideo rpicamvid_2025_08_09_Aug_08_12 12 >>/home/raspberrypi/.rpi/rpi.log 2>&1
+23:37 7      -- 37 23 * * * raspberrypi . ~/rpi.source >>/home/raspberrypi/.rpi/rpi.log 2>&1 && rpiCaptureVideo rpicamvid_2025_08_09_Aug_08_7 7 >>/home/raspberrypi/.rpi/rpi.log 2>&1
+```
+
+### rpiSchedRemoveDailyVideo
+
+```
+rpiSchedRemoveDailyVideo <time as HH:MM> <duration in seconds>
+```
+
+Remove one scheduled daily video specified by the same parameters as were used to create it.
+The values of the parameter are also presented when using the (#rpiSchedListDailyVideo) command.
+
+`time as HH:MM`: time at which a video should be recorded every day. Format is hours (24 hour notation) and minutes, e.g. 23:39.
+`duration in seconds`: number of seconds to record the video for
+
+## Raspberry Pi functions
+
+FIXME
+
 # Improvement list
 
-* check that the Raspberry Pi device has been setup when calling the other functions
+* use tool to create a proper rpi server (like numbat does)
 * have a cleaner way of handling the files on the Raspberry Pi
-* have a handler to make sure that concurrent uses of the Raspberry Pi do not collide
 * maybe make the functions work on rpi as on remote host... Or is it too much abstraction?
-* cron setup helper functions
 * make sure that there is space enough before recording a video. Investigate how much space is needed
 * investigate what additional parameter are needed for the video (resolution and exposure control)
+* fail when trying to create the same schedule twice
+* warning when adding a schedule overlaping with another schedule
+* DONE -- check that the Raspberry Pi device has been setup when calling the other functions
+* DONE -- have a handler to make sure that concurrent uses of the Raspberry Pi do not collide
+* DONE -- cron setup helper functions
+
