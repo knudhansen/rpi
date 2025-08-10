@@ -132,6 +132,14 @@ rpiSchedVideoRemoveAllDaily
 
 Removes all the scheduled daliy videos
 
+### rpiSchedVideoRetrieveRecordings
+
+```
+rpiSchedVideoRetrieveRecordings
+```
+
+Fetches the scheduled recordings from the Raspberry Pi
+
 ## Raspberry Pi functions
 
 FIXME
