@@ -119,6 +119,7 @@ else
     }
 
     RPI_SCHED_VIDEO_CRON_FILE_PREFIX="/etc/cron.d/rpicam_"
+    RPI_SCHED_VIDEO_DIR="rpi_sched_video"
 
     rpiSchedVideoCronFileName() {
 	local time=$1
@@ -130,29 +131,41 @@ else
 	echo "${RPI_SCHED_VIDEO_CRON_FILE_PREFIX}${timeHours}_${timeMinutes}_${durationSec}"
     }
 
+    rpiSchedVideoFileName() {
+	local durationSec=$1
+
+	echo "${RPI_SCHED_VIDEO_DIR}/$(date +rpicamvid_%Y_%m_%d_%h_%m_$durationSec).mp4"
+    }
+
     rpiSchedVideoAddDaily() {
 	local time=$1
 	local durationSec=$2
 
+	local videoFile=$(rpiSchedVideoFileName $durationSec)
+
+	# make sure that the folder for scheduled videos exists
+	mkdir -p $RPI_SCHED_VIDEO_DIR
+
+	# setup cron job for recording video
 	local timeHours=${time%%:*}
 	local timeMinutes=${time##*:}
 
 	local cronSchedule="$timeMinutes $timeHours * * *"
 	
 	local runningUser=$(whoami)
-	echo "$cronSchedule $runningUser . ~/$(basename $BASH_SOURCE) >>$RPI_LOG 2>&1 && rpiCaptureVideo $(date +rpicamvid_%Y_%m_%d_%h_%m_$durationSec) $durationSec >>$RPI_LOG 2>&1" | sudo tee $(rpiSchedVideoCronFileName $time $durationSec) >/dev/null
+	echo "$cronSchedule $runningUser . ~/$(basename $BASH_SOURCE) >>$RPI_LOG 2>&1 && rpiCaptureVideo \$(rpiSchedVideoFileName $durationSec) $durationSec >>$RPI_LOG 2>&1" | sudo tee $(rpiSchedVideoCronFileName $time $durationSec) >/dev/null
     }
 
     rpiSchedVideoListDaily() {
 	local filePrefix=$(basename ${RPI_SCHED_VIDEO_CRON_FILE_PREFIX})
 	local fileDir=$(dirname ${RPI_SCHED_VIDEO_CRON_FILE_PREFIX})
-	for filePath in $(find $fileDir -name "$filePrefix*"); do
+	for filePath in $(find $fileDir -name "$filePrefix*" | sort); do
 	    local fileName=$(basename $filePath)
 	    local fileSuffix=${fileName#*_}
 	    local timeHours=$(echo $fileSuffix | awk -F'_' '{print $1}')
 	    local timeMinutes=$(echo $fileSuffix | awk -F'_' '{print $2}')
 	    local durationSec=$(echo $fileSuffix | awk -F'_' '{print $3}')
-	    printf "%2d:%02d %-6d -- $(cat $filePath)\n" $timeHours $timeMinutes $durationSec
+	    printf "%2d:%02d %-6d -- $filePath: $(cat $filePath)\n" $timeHours $timeMinutes $durationSec
 	done
     }
 

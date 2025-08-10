@@ -139,6 +139,8 @@ FIXME
 * place the scheduled video files somewhere a bit cleaner
 * make the calls from host to rpi a bit less stupid: i.e. use FUNCNAME instead of duplicating it in ssh
 * add a function to fetch the scheduled videos (maybe including deleting them...)
+* add number of executed schedules to the list function
+* add function to retrieve the videos
 * DONE -- check that the Raspberry Pi device has been setup when calling the other functions
 * DONE -- have a handler to make sure that concurrent uses of the Raspberry Pi do not collide
 * DONE -- cron setup helper functions
