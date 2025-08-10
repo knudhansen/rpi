@@ -123,6 +123,15 @@ The values of the parameter are also presented when using the (#rpiSchedListDail
 
 `duration in seconds`: number of seconds to record the video for
 
+
+### rpiSchedVideoRemoveAllDaily
+
+```
+rpiSchedVideoRemoveAllDaily
+```
+
+Removes all the scheduled daliy videos
+
 ## Raspberry Pi functions
 
 FIXME

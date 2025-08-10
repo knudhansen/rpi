@@ -91,6 +91,10 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 	rpissh "rpiSchedVideoRemoveDaily $time $durationSec"
     }
 
+    rpiSchedVideoRemoveAllDaily() {
+	rpissh "rpiSchedVideoRemoveAllDaily"
+    }
+
 else
 
     ## functions on the Raspberry Pi ##
@@ -174,5 +178,9 @@ else
 	local durationSec=$2
 
 	sudo rm $(rpiSchedVideoCronFileName $time $durationSec)
+    }
+
+    rpiSchedVideoRemoveAllDaily() {
+	sudo rm ${RPI_SCHED_VIDEO_CRON_FILE_PREFIX}*
     }
 fi
