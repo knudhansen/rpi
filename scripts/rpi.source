@@ -1,4 +1,5 @@
 RPI_DIR=$(realpath ~/.rpi)
+RPI_SCHED_VIDEO_DIR="rpi_sched_video"
 
 rpimodel=$(tr -d '\0' 2>/dev/null < /proc/device-tree/model)
 
@@ -14,7 +15,6 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 	echo $ip > $RPI_DIR/rpi.ip
 	echo $username > $RPI_DIR/rpi.username
 	echo "${username}@${ip}" > $RPI_DIR/rpi.access
-
     }
 
     rpiGetAccess() {
@@ -95,6 +95,11 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 	rpissh "rpiSchedVideoRemoveAllDaily"
     }
 
+    rpiSchedVideoRetrieveRecordings() {
+	mkdir -p $RPI_SCHED_VIDEO_DIR
+	rpirsyncFrom ${RPI_SCHED_VIDEO_DIR}/
+    }
+
 else
 
     ## functions on the Raspberry Pi ##
@@ -123,7 +128,6 @@ else
     }
 
     RPI_SCHED_VIDEO_CRON_FILE_PREFIX="/etc/cron.d/rpicam_"
-    RPI_SCHED_VIDEO_DIR="rpi_sched_video"
 
     rpiSchedVideoCronFileName() {
 	local time=$1
