@@ -1,8 +1,57 @@
 # User guide
 
-The bash functions provided are simple wrappers that make it possible to access a *single* Raspberry Pi device without having to repeatedly specify the device's address and user.
+## Getting started
 
-To do so, first call the [rpiSetup](#rpiSetup) function with the IP of the Raspberry Pi device and the username to use on it. Once this is done, the remaining functions described in the [reference](#Reference) section can be used.
+### pre-requisites
+
+In order to be able to use this set of bash functions, you need:
+
+* a Raspberry Pi device turned on and connected to the internet
+* a camera module attached to the Raspberry Pi device
+* the IP address of the Raspberry Pi device
+* the username and the password for one user on the Raspberry Pi device
+* a host machine able to run bash (e.g. using terminal on a Mac OS X or linux, using Putty on Windows)
+
+### Making my first photo
+
+First of all, you need to clone this repo onto your host machine:
+
+```
+$ cd my_rpi_dir && git@github.com:knudhansen/rpi.git
+```
+
+Then you need to source the file defining all the function of this repo:
+
+```
+$ source scripts/rpi.source
+```
+
+Now you need to specify the Raspberry Pi device you want to use. This is done by calling the rpiSetup function
+
+```
+$ rpiSetup 192.168.0.77 raspberrypi
+raspberrypi@192.168.0.7's password: 
+```
+
+This will create a `.rpi` directory under the home directory of your user on the host machine and save the information about the Raspberry Pi device in it.
+It will also write the authentication public key onto the Raspberry Pi device. This requires typing the password for the chosen user on the Raspberry Pi device.
+
+```
+$ rpiCapturePhoto my_first_photo.jpeg
+```
+
+This function will have the Raspberry Pi device take a photo and will then fetch the photo back onto the host machine.
+
+```
+$ ls -al my_first_photo.jpg 
+-rw-r--r--@ 1 myuser  mygroup  1131714 11 Aug 11:59 my_first_photo.jpg
+```
+
+## Authentication
+
+Communication with THe Raspberry Pi device is done via SSH (and rsync, but that also uses SSH). In order to avoid being prompted a password for every communication, SSH communication uses an authentication key instead.
+
+When setting up the Raspberry Pi device, which key to use can be specified. If not, an rsa key stored under the .spi directory will be used. If the specified key does not exist, it is created by rpiSetup and added to the .ssh/authorized_keys file on the Raspberry Pi device. Adding the key to the Raspberry Pi device requires entering the password for the specified user on the Raspberry Pi device, but after this, no password will be required when communicating with the Raspberry Pi from the host machine that ran rpiSetup.
 
 # Reference
 

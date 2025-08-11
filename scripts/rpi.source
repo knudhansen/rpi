@@ -19,7 +19,7 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 
 	# if no rpi key present generate 1
 	if [ ! -f ${RPI_DIR}/${key}.pub ]; then
-	    ssh-keygen -f ${RPI_DIR}/${key} -t rsa -b 4096 -N ""
+	    ssh-keygen -f ${RPI_DIR}/${key} -t rsa -b 4096 -N "" >/dev/null
 	fi
 
 	# send the key to Raspberry Pi and concatenate the key to authorized_keys. This will request password on Raspberry Pi once.
