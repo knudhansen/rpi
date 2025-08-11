@@ -1,5 +1,6 @@
 RPI_DIR=$(realpath ~/.rpi)
 RPI_SCHED_VIDEO_DIR="rpi_sched_video"
+RPI_SOURCE_FILE=$(realpath $BASH_SOURCE)
 
 rpimodel=$(tr -d '\0' 2>/dev/null < /proc/device-tree/model)
 
@@ -60,7 +61,7 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
     rpissh() {
 	[ "$(rpiGetAccess)" == "" ] && return 1
 
-	rpirsync $(realpath $BASH_SOURCE) $(rpiGetAccess):~ >/dev/null || return 2
+	rpirsync $RPI_SOURCE_FILE $(rpiGetAccess):~ >/dev/null || return 2
 
 	if [ $# -eq 0 ]; then
 	    # FIXME: Do I really need to source rpi.source... This is the case of interactive ssh anyways, so maybe I can leave it up to the user to do so...

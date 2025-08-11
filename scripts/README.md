@@ -87,7 +87,7 @@ We can then retrieve the recording to the host machine:
 $ rpiSchedVideoRetrieveRecordings
 receiving file list ... done
 ./
-rpicamvid_2025_08_11_12_34_56.mp4
+12_34_56/rpicamvid_2025_08_11_12_34_56.mp4
 
 sent 44 bytes  received 905626 bytes  603780.00 bytes/sec
 total size is 905219  speedup is 1.00
@@ -96,8 +96,40 @@ total size is 905219  speedup is 1.00
 They are saved on the host machine under the rpi_sched_video directory
 
 ```
-$ ls rpi_sched_video/
-rpicamvid_2025_08_11_12_34_56.mp4
+$ find rpi_sched_video/ -type f
+rpi_sched_video/12_34_56/rpicamvid_2025_08_11_12_34_56.mp4
+```
+
+# Implementation details
+
+## Raspberry Pi device file organization
+
+On the Raspberry Pi device, all files used by the functions in this repo are located under the home directory of the used user on the Raspberry Pi device.
+
+### Function definition files
+
+```
+~/rpi.source
+```
+
+This is a file that is updated and sourced every time rpissh is used. This file makes sure that the functions defined for the Raspberry Pi in the rpi.source file are available and up-to-date. 
+
+### Scheduled video files
+
+```
+~/rpi_sched_video/<schedule id>/<video file name>
+```
+
+where:
+
+`schedule id`: ID of the schedule is `<schedule time hours>_<schedule minutes>_<duration seconds>`
+
+`video file name`: the name of the video is not based on the schedule time, but on the actual date and time where the recording is started (they of course relate to each other)
+
+example of file:
+
+```
+~/rpi_sched_video/12_34_56/rpicamvid_2025_08_11_12_34_56.mp4
 ```
 
 ## Authentication
