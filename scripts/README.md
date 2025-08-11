@@ -68,6 +68,7 @@ $ rpiSchedVideoAddDaily 12:34 56
 
 If we look at the list of scheduled videos, we now should see the created schedule:
 
+```
 $ rpiSchedVideoListDaily
 12:34 56     -- /etc/cron.d/rpicam_12_34_56: 34 12 * * * raspberrypi . ~/rpi.source >>/home/raspberrypi/.rpi/rpi.log 2>&1 && rpiCaptureVideo $(rpiSchedVideoFileName 56) 56 >>/home/raspberrypi/.rpi/rpi.log 2>&1
 $ rpiSchedVideoListRecordings
