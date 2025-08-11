@@ -30,7 +30,7 @@ Now you need to specify the Raspberry Pi device you want to use. This is done by
 
 ```
 $ rpiSetup 192.168.0.77 raspberrypi
-raspberrypi@192.168.0.7's password: 
+raspberrypi@192.168.0.7's password:
 ```
 
 This will create a `.rpi` directory under the home directory of your user on the host machine and save the information about the Raspberry Pi device in it.
@@ -43,8 +43,60 @@ $ rpiCapturePhoto my_first_photo.jpeg
 This function will have the Raspberry Pi device take a photo and will then fetch the photo back onto the host machine.
 
 ```
-$ ls -al my_first_photo.jpg 
+$ ls -al my_first_photo.jpg
 -rw-r--r--@ 1 myuser  mygroup  1131714 11 Aug 11:59 my_first_photo.jpg
+```
+
+### Scheduling a daily video
+
+Now that we have taken our first photo, we know that our Raspberry Pi is connected correctly to our host machine, and we now can try to setup daily video recording.
+
+First let's check that we do not have any scheduled daily videos:
+
+```
+$ rpiSchedVideoListDaily
+$ rpiSchedVideoListRecordings
+```
+
+Both of these functions should return with no output.
+
+Now let's schedule a 56 seconds video recording every day at 12:34.
+
+```
+$ rpiSchedVideoAddDaily 12:34 56
+```
+
+If we look at the list of scheduled videos, we now should see the created schedule:
+
+$ rpiSchedVideoListDaily
+12:34 56     -- /etc/cron.d/rpicam_12_34_56: 34 12 * * * raspberrypi . ~/rpi.source >>/home/raspberrypi/.rpi/rpi.log 2>&1 && rpiCaptureVideo $(rpiSchedVideoFileName 56) 56 >>/home/raspberrypi/.rpi/rpi.log 2>&1
+$ rpiSchedVideoListRecordings
+```
+
+It is not 12:34 yet, so There are still no recordings on the Raspberry Pi device, why rpiSchedVideoListRecordings outputs nothing. Once it is 12:35 (the recording finishes around 12:34:56), we can check that the recording has been made and is present on the Raspberry Pi device:
+
+```
+$ rpiSchedVideoListRecordings
+rpicamvid_2025_08_11_12_34_56.mp4
+```
+
+We can then retrieve the recording to the host machine:
+
+```
+$ rpiSchedVideoRetrieveRecordings
+receiving file list ... done
+./
+rpicamvid_2025_08_11_12_34_56.mp4
+
+sent 44 bytes  received 905626 bytes  603780.00 bytes/sec
+total size is 905219  speedup is 1.00
+```
+
+They are saved on the host machine under the rpi_sched_video directory
+
+```
+$ ls rpi_sched_video/
+rpicamvid_2025_08_11_12_34_56.mp4
 ```
 
 ## Authentication

@@ -213,6 +213,6 @@ else
     }
 
     rpiSchedVideoRemoveAllDaily() {
-	sudo rm ${RPI_SCHED_VIDEO_CRON_FILE_PREFIX}*
+	sudo rm -f ${RPI_SCHED_VIDEO_CRON_FILE_PREFIX}*
     }
 fi
