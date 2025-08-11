@@ -121,11 +121,11 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
     }
 
     rpiSchedVideoDeleteRecordings() {
-	rpissh "rm ${RPI_SCHED_VIDEO_DIR}/*"
+	rpissh "rm -rf ${RPI_SCHED_VIDEO_DIR}/*"
     }
 
     rpiSchedVideoListRecordings() {
-	rpissh "ls $RPI_SCHED_VIDEO_DIR"
+	rpissh "find $RPI_SCHED_VIDEO_DIR -type f"
     }
 
 else
@@ -168,28 +168,29 @@ else
     }
 
     rpiSchedVideoFileName() {
-	local durationSec=$1
+	local scheduleId=$1
+	local durationSec=$2
 
-	echo "${RPI_SCHED_VIDEO_DIR}/$(date +rpicamvid_%Y_%m_%d_%H_%M_$durationSec).mp4"
+	echo "${RPI_SCHED_VIDEO_DIR}/${scheduleId}/$(date +rpicamvid_%Y_%m_%d_%H_%M_$durationSec).mp4"
     }
 
     rpiSchedVideoAddDaily() {
 	local time=$1
 	local durationSec=$2
 
-	local videoFile=$(rpiSchedVideoFileName $durationSec)
-
-	# make sure that the folder for scheduled videos exists
-	mkdir -p $RPI_SCHED_VIDEO_DIR
-
 	# setup cron job for recording video
 	local timeHours=${time%%:*}
 	local timeMinutes=${time##*:}
+	local scheduleId=${timeHours}_${timeMinutes}_${durationSec}
+
+	# make sure that the folder for scheduled videos exists
+	local scheduleDir=$(dirname $(rpiSchedVideoFileName $scheduleId $durationSec))
+	mkdir -p $scheduleDir
 
 	local cronSchedule="$timeMinutes $timeHours * * *"
 	
 	local runningUser=$(whoami)
-	echo "$cronSchedule $runningUser . ~/$(basename $BASH_SOURCE) >>$RPI_LOG 2>&1 && rpiCaptureVideo \$(rpiSchedVideoFileName $durationSec) $durationSec >>$RPI_LOG 2>&1" | sudo tee $(rpiSchedVideoCronFileName $time $durationSec) >/dev/null
+	echo "$cronSchedule $runningUser . ~/$(basename $BASH_SOURCE) >>$RPI_LOG 2>&1 && rpiCaptureVideo \$(rpiSchedVideoFileName $scheduleId $durationSec) $durationSec >>$RPI_LOG 2>&1" | sudo tee $(rpiSchedVideoCronFileName $time $durationSec) >/dev/null
     }
 
     rpiSchedVideoListDaily() {
