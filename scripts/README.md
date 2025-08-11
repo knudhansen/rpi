@@ -11,7 +11,7 @@ To do so, first call the [rpiSetup](#rpiSetup) function with the IP of the Raspb
 ### rpiSetup
 
 ```
-rpiSetup <rpi ip address> <username>
+rpiSetup <rpi ip address> <username> [<ssh key>]
 ```
 
 This bash function sets-up the information needed to connect to the Raspberry pi device and makes it possible to access it without repeating these information on every access.
@@ -24,6 +24,8 @@ The information about the Raspberry Pi device are stored inside the .rpi directo
 
 `username`: The name of the user to use on the Raspberry Pi device.
 
+`key`: key to use when ssh'ing with the Raspberry Pi device. This defaults to ~/.rpi/rpi_rsa. If the key is not present, it will be created byt the rpiSetupFunction. The key is sent to the Raspberry Pi device to avoid being prompted a password on each ssh connection to the Raspberry Pi device. That key is also used for all the rsync functions provided.
+
 ### rpiGetAccess
 
 ```
@@ -31,6 +33,14 @@ rpiGetAccess
 ```
 
 This bash function prints on stdout the access string <username>@<ip address> for the Raspberry Pi device that has been setup using [rpiSetup](#rpiSetup). It is mainly thought of as an internal function.
+
+### rpiGetSshOptions
+
+```
+rpiGetSshOptions
+```
+
+This bash function returns the options to be added to ssh commands for using the key specified during rpiSetup.
 
 ### rpissh
 
@@ -42,6 +52,24 @@ This bash function is used to ssh to the Raspberry Pi that has been setup using 
 
 `command`: optional command to execute on the Raspberry Pi device. If command is passed, then the command is executed on the Raspberry Pi device (make sure to use quotes and escape elements in the command as needed). If command is omitted, a shell will be created on the Raspberry Pi device allowing interaction with it.
 
+### rpirsync
+
+```
+rpirsync <source> <destination>
+```
+
+This bash function rsyncs files from source to destination. Files on the Raspberry Pi device have to be prefixed with the user to use on the Raspberry Pi device and the Raspberry Pi device IP address.
+
+`source`: file/dir to rsync
+
+`destination`: where to copy file/dir
+
+Example:
+
+```
+rpirsync myFavouriteDir/ raspberrypi@192.168.0.77:myFavouriteDirOnRpi/
+```
+
 ### rpirsyncTo
 
 ```
@@ -50,7 +78,7 @@ rpirsyncTo <path>
 
 This bash function rsyncs from the machine that the function is run on and to the Raspberry Pi setup using [rpiSetup](#rpiSetup).
 
-`path`: path that should be rsynce'ed.
+`path`: path that should be rsynce'ed. The file at the specified path on the host machine is copied to the same path relative to the Raspberry Pi user home onto the Raspberry Pi device.
 
 ### rpirsyncFrom
 
@@ -60,7 +88,7 @@ rpirsyncFrom <path>
 
 This bash function rsyncs from the Raspberry Pi setup using [rpiSetup](#rpiSetup) to the machine that the function is run on.
 
-`path`: path that should be rsynce'ed.
+`path`: path that should be rsynce'ed. The path is relative to the Raspberry Pi user home and is copied to the same path relative to the current work directory on the host machine.
 
 ### rpiCapturePhoto
 
@@ -138,7 +166,23 @@ Removes all the scheduled daliy videos
 rpiSchedVideoRetrieveRecordings
 ```
 
-Fetches the scheduled recordings from the Raspberry Pi
+Fetches the scheduled recordings from the Raspberry Pi device
+
+### rpiSchedVideoDeleteRecordings
+
+```
+rpiSchedVideoDeleteRecordings
+```
+
+Delete all the scheduled recordings from the Raspberry Pi device
+
+### rpiSchedVideoListRecordings
+
+```
+rpiSchedVideoListRecordings
+```
+
+List the scheduled recordings present on the Raspberry Pi device
 
 ## Raspberry Pi functions
 
@@ -160,10 +204,11 @@ FIXME
 * add function to list the videos on host and raspberry pi
 * add argument to be able to choose the dir where video are placed on host
 * add raspberry pi serial number to saved videos
-* add client to authorized_keys as part of setup
 * how to control camera settings
+* currently, the chosen key is added to authorized_keys for every rpiSetup. Maybe remove duplicates?
 * DONE -- check that the Raspberry Pi device has been setup when calling the other functions
 * DONE -- have a handler to make sure that concurrent uses of the Raspberry Pi do not collide
 * DONE -- cron setup helper functions
 * DONE -- cleanup command naming for schedule
 * DONE -- add function to retrieve the videos
+* DONE add client to authorized_keys as part of setup

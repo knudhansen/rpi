@@ -10,15 +10,35 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
     rpiSetup() {
 	local ip=$1
 	local username=$2
+	local key=${3:-rpi_rsa}
 
 	mkdir -p $RPI_DIR
-	echo $ip > $RPI_DIR/rpi.ip
-	echo $username > $RPI_DIR/rpi.username
-	echo "${username}@${ip}" > $RPI_DIR/rpi.access
+	echo $ip > ${RPI_DIR}/rpi.ip
+	echo $username > ${RPI_DIR}/rpi.username
+	echo $key > ${RPI_DIR}/rpi.key
+
+	# if no rpi key present generate 1
+	if [ ! -f ${RPI_DIR}/${key}.pub ]; then
+	    ssh-keygen -f ${RPI_DIR}/${key} -t rsa -b 4096 -N ""
+	fi
+
+	# send the key to Raspberry Pi and concatenate the key to authorized_keys. This will request password on Raspberry Pi once.
+	ssh $(rpiGetAccess) "touch ~/.ssh/authorized_keys && echo $(cat ${RPI_DIR}/${key}.pub) >> ~/.ssh/authorized_keys"
     }
 
     rpiGetAccess() {
-	cat $RPI_DIR/rpi.access 2>/dev/null
+	echo "$(cat ${RPI_DIR}/rpi.username)@$(cat ${RPI_DIR}/rpi.ip)" 2>/dev/null
+    }
+
+    rpiGetSshOptions() {
+	echo "-i ${RPI_DIR}/$(cat ${RPI_DIR}/rpi.key)" 2>/dev/null
+    }
+
+    rpirsync() {
+	local rsyncSrc=$1
+	local rsyncDst=$2
+
+	rsync -avH -e "ssh $(rpiGetSshOptions)" $rsyncSrc $rsyncDst
     }
 
     rpirsyncTo() {
@@ -26,7 +46,7 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 
 	[ "$(rpiGetAccess)" == "" ] && return 1
 
-	rsync -avH $file $(rpiGetAccess):~/$file
+	rpirsync $file $(rpiGetAccess):~/$file
     }
 
     rpirsyncFrom() {
@@ -34,23 +54,23 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 
 	[ "$(rpiGetAccess)" == "" ] && return 1
 
-	rsync -avH $(rpiGetAccess):~/$file $file
+	rpirsync $(rpiGetAccess):~/$file $file
     }
 
     rpissh() {
 	[ "$(rpiGetAccess)" == "" ] && return 1
 
-	rsync -avH $(realpath $BASH_SOURCE) $(rpiGetAccess):~ >/dev/null
+	rpirsync $(realpath $BASH_SOURCE) $(rpiGetAccess):~ >/dev/null || return 2
 
 	if [ $# -eq 0 ]; then
 	    # FIXME: Do I really need to source rpi.source... This is the case of interactive ssh anyways, so maybe I can leave it up to the user to do so...
 	    #        Doing the whole backup restore does not work if the ssh session is aborted by the server, causing the source line to be present several times, and to not be removed. It could be possible to make sure that there is only one line, but the level of complexity increases, and it is not even sure that this avoid all possible error scenarios.
 	    #        The backup restore also does not work if you have more than one client ssh'ing in. Then the second client will source rpi.source twice.
-	    ssh $(rpiGetAccess) "cp ~/.bashrc ~/.bashrc_rpibackup && echo \"source ~/$(basename $BASH_SOURCE)\" >> ~/.bashrc"
-	    ssh $(rpiGetAccess)
-	    ssh $(rpiGetAccess) "mv ~/.bashrc_rpibackup ~/.bashrc"
+	    ssh $(rpiGetSshOptions) $(rpiGetAccess) "cp ~/.bashrc ~/.bashrc_rpibackup && echo \"source ~/$(basename $BASH_SOURCE)\" >> ~/.bashrc" || return 3
+	    ssh $(rpiGetSshOptions) $(rpiGetAccess) || return 3
+	    ssh $(rpiGetSshOptions) $(rpiGetAccess) "mv ~/.bashrc_rpibackup ~/.bashrc" || return 3
 	else
-	    ssh $(rpiGetAccess) "source ~/$(basename $BASH_SOURCE) && $@"
+	    ssh $(rpiGetSshOptions) $(rpiGetAccess) "source ~/$(basename $BASH_SOURCE) && $@"|| return 3
 	fi
     }
 
@@ -76,7 +96,7 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
     rpiSchedVideoAddDaily() {
 	local time=$1
 	local durationSec=$2
-
+	
 	rpissh "rpiSchedVideoAddDaily $time $durationSec"
     }
 
@@ -98,6 +118,14 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
     rpiSchedVideoRetrieveRecordings() {
 	mkdir -p $RPI_SCHED_VIDEO_DIR
 	rpirsyncFrom ${RPI_SCHED_VIDEO_DIR}/
+    }
+
+    rpiSchedVideoDeleteRecordings() {
+	rpissh "rm ${RPI_SCHED_VIDEO_DIR}/*"
+    }
+
+    rpiSchedVideoListRecordings() {
+	rpissh "ls $RPI_SCHED_VIDEO_DIR"
     }
 
 else
@@ -142,7 +170,7 @@ else
     rpiSchedVideoFileName() {
 	local durationSec=$1
 
-	echo "${RPI_SCHED_VIDEO_DIR}/$(date +rpicamvid_%Y_%m_%d_%h_%m_$durationSec).mp4"
+	echo "${RPI_SCHED_VIDEO_DIR}/$(date +rpicamvid_%Y_%m_%d_%H_%M_$durationSec).mp4"
     }
 
     rpiSchedVideoAddDaily() {
