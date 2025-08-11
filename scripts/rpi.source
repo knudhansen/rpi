@@ -42,20 +42,15 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 	rsync -avH -e "ssh $(rpiGetSshOptions)" $rsyncSrc $rsyncDst
     }
 
-    rpirsyncTo() {
-	local file=$1
-
-	[ "$(rpiGetAccess)" == "" ] && return 1
-
-	rpirsync $file $(rpiGetAccess):~/$file
-    }
-
     rpirsyncFrom() {
 	local file=$1
+	local hostDest=$2
 
 	[ "$(rpiGetAccess)" == "" ] && return 1
 
-	rpirsync $(rpiGetAccess):~/$file $file
+	local serialNumber=$(rpiGetSerialNumber)
+	mkdir -p ~/${serialNumber}
+	rpirsync $(rpiGetAccess):~/$file ~/rpi_${serialNumber}/$file
     }
 
     rpissh() {
@@ -73,6 +68,10 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 	else
 	    ssh $(rpiGetSshOptions) $(rpiGetAccess) "source ~/$(basename $BASH_SOURCE) && $@"|| return 3
 	fi
+    }
+
+    rpiGetSerialNumber() {
+	rpissh "rpiGetSerialNumber"
     }
 
     rpiCapturePhoto() {
@@ -140,6 +139,10 @@ else
 
     rpiTest() {
 	echo "rpiTest $@" >> $RPI_LOG
+    }
+
+    rpiGetSerialNumber() {
+	cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2
     }
 
     rpiLibcameravid() {

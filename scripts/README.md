@@ -186,6 +186,14 @@ This bash function is used to ssh to the Raspberry Pi that has been setup using 
 
 `command`: optional command to execute on the Raspberry Pi device. If command is passed, then the command is executed on the Raspberry Pi device (make sure to use quotes and escape elements in the command as needed). If command is omitted, a shell will be created on the Raspberry Pi device allowing interaction with it.
 
+### rpiGetSerialNumber
+
+```
+rpiGetSerialNumber
+```
+
+This bash functions returns the serial number of the Raspberry Pi that has been specified when calling rpiSetup.
+
 ### rpirsync
 
 ```
@@ -203,16 +211,6 @@ Example:
 ```
 rpirsync myFavouriteDir/ raspberrypi@192.168.0.77:myFavouriteDirOnRpi/
 ```
-
-### rpirsyncTo
-
-```
-rpirsyncTo <path>
-```
-
-This bash function rsyncs from the machine that the function is run on and to the Raspberry Pi setup using [rpiSetup](#rpiSetup).
-
-`path`: path that should be rsynce'ed. The file at the specified path on the host machine is copied to the same path relative to the Raspberry Pi user home onto the Raspberry Pi device.
 
 ### rpirsyncFrom
 
