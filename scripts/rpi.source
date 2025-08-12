@@ -194,7 +194,15 @@ else
 	local cronSchedule="$timeMinutes $timeHours * * *"
 	
 	local runningUser=$(whoami)
-	echo "$cronSchedule $runningUser . ~/$(basename $BASH_SOURCE) >>$RPI_LOG 2>&1 && rpiCaptureVideo \$(rpiSchedVideoFileName $scheduleId $durationSec) $durationSec >>$RPI_LOG 2>&1" | sudo tee $(rpiSchedVideoCronFileName $time $durationSec) >/dev/null
+
+	local cronFileName=$(rpiSchedVideoCronFileName $time $durationSec)
+	ls $cronFileName >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+	    echo a video is already scheduled at time $time for duration $duration.
+	    return 1
+	fi
+
+	echo "$cronSchedule $runningUser . ~/$(basename $BASH_SOURCE) >>$RPI_LOG 2>&1 && rpiCaptureVideo \$(rpiSchedVideoFileName $scheduleId $durationSec) $durationSec >>$RPI_LOG 2>&1" | sudo tee $cronFileName >/dev/null
     }
 
     rpiSchedVideoListDaily() {

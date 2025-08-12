@@ -138,7 +138,7 @@ Communication with THe Raspberry Pi device is done via SSH (and rsync, but that 
 
 When setting up the Raspberry Pi device, which key to use can be specified. If not, an rsa key stored under the .spi directory will be used. If the specified key does not exist, it is created by rpiSetup and added to the .ssh/authorized_keys file on the Raspberry Pi device. Adding the key to the Raspberry Pi device requires entering the password for the specified user on the Raspberry Pi device, but after this, no password will be required when communicating with the Raspberry Pi from the host machine that ran rpiSetup.
 
-# Reference
+# RPI Functions Reference
 
 ## Host functions
 
@@ -250,7 +250,8 @@ This bash function makes a video on the Raspberry Pi setup using [rpiSetup](#rpi
 rpiSchedVideoAddDaily <time as HH:MM> <duration in seconds>
 ```
 
-This function schedules a video of <duration in seconds> to be recorded daily at HH:MM
+This function schedules a video of <duration in seconds> to be recorded daily at HH:MM. It will fail if another
+video is already scheduled for the same time and return error code 1.
 
 `time as HH:MM`: time at which a video should be recorded every day. Format is hours (24 hour notation) and
                  minutes, e.g. 23:39.
@@ -327,20 +328,21 @@ FIXME
 * maybe make the functions work on rpi as on remote host... Or is it too much abstraction?
 * make sure that there is space enough before recording a video. Investigate how much space is needed
 * investigate what additional parameter are needed for the video (resolution and exposure control)
-* fail when trying to create the same schedule twice
-* warning when adding a schedule overlaping with another schedule
-* place the scheduled video files somewhere a bit cleaner
+* ONGOING -- warning when adding a schedule overlaping with another schedule
 * make the calls from host to rpi a bit less stupid: i.e. use FUNCNAME instead of duplicating it in ssh
 * add a function to fetch the scheduled videos (maybe including deleting them...)
 * add number of executed schedules to the list function
 * add function to list the videos on host and raspberry pi
 * add argument to be able to choose the dir where video are placed on host
-* add raspberry pi serial number to saved videos
 * how to control camera settings
 * currently, the chosen key is added to authorized_keys for every rpiSetup. Maybe remove duplicates?
+* tidy up error codes
 * DONE -- check that the Raspberry Pi device has been setup when calling the other functions
 * DONE -- have a handler to make sure that concurrent uses of the Raspberry Pi do not collide
 * DONE -- cron setup helper functions
 * DONE -- cleanup command naming for schedule
 * DONE -- add function to retrieve the videos
-* DONE add client to authorized_keys as part of setup
+* DONE -- add client to authorized_keys as part of setup
+* DONE -- add raspberry pi serial number to saved videos
+* DONE -- place the scheduled video files somewhere a bit cleaner
+* DONE -- fail when trying to create the same schedule twice
