@@ -20,11 +20,12 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 
 	# if no rpi key present generate 1
 	if [ ! -f ${RPI_DIR}/${key}.pub ]; then
+	    echo "key ${RPI_DIR}/${key} not found. Generating it"
 	    ssh-keygen -f ${RPI_DIR}/${key} -t rsa -b 4096 -N "" >/dev/null
 	fi
 
 	# send the key to Raspberry Pi and concatenate the key to authorized_keys. This will request password on Raspberry Pi once.
-	ssh $(rpiGetAccess) "touch ~/.ssh/authorized_keys && echo $(cat ${RPI_DIR}/${key}.pub) >> ~/.ssh/authorized_keys"
+	ssh $(rpiGetAccess) "touch ~/.ssh/authorized_keys && grep \"$(cat ${RPI_DIR}/${key}.pub)\" ~/.ssh/authorized_keys >/dev/null|| echo $(cat ${RPI_DIR}/${key}.pub) >> ~/.ssh/authorized_keys"
     }
 
     rpiGetAccess() {
@@ -39,18 +40,15 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 	local rsyncSrc=$1
 	local rsyncDst=$2
 
+	[ "$(rpiGetAccess)" == "" ] && return 1
+
 	rsync -avH -e "ssh $(rpiGetSshOptions)" $rsyncSrc $rsyncDst
     }
 
     rpirsyncFrom() {
 	local file=$1
-	local hostDest=$2
 
-	[ "$(rpiGetAccess)" == "" ] && return 1
-
-	local serialNumber=$(rpiGetSerialNumber)
-	mkdir -p ~/${serialNumber}
-	rpirsync $(rpiGetAccess):~/$file ~/rpi_${serialNumber}/$file
+	rpirsync $(rpiGetAccess):~/$file $file
     }
 
     rpissh() {
@@ -78,7 +76,7 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 	local file=$1
 
 	# have rpi take the photo
-	rpissh "rpicam-still -o $file" >/dev/null 2>/dev/null || return 1
+	rpissh "rpicam-still -o $file" >/dev/null 2>&1 || return 1
 	# get it from rpi
 	rpirsyncFrom $file >/dev/null 2>/dev/null || return 2
     }
@@ -88,7 +86,7 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 	local timeSec=$2
 
 	# have rpi make a video
-	rpissh "rpiCaptureVideo $file $timeSec" || return 1
+	rpissh "rpiCaptureVideo $file $timeSec" >/dev/null 2>&1 || return 1
 	# get it from rpi
 	rpirsyncFrom $file
     }
@@ -116,8 +114,10 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
     }
 
     rpiSchedVideoRetrieveRecordings() {
-	mkdir -p $RPI_SCHED_VIDEO_DIR
-	rpirsyncFrom ${RPI_SCHED_VIDEO_DIR}/
+	local videoHostDir=~/rpi_$(rpiGetSerialNumber)/$RPI_SCHED_VIDEO_DIR
+
+	mkdir -p $videoHostDir
+	rpirsync $(rpiGetAccess):~/${RPI_SCHED_VIDEO_DIR}/ ${videoHostDir}/
     }
 
     rpiSchedVideoDeleteRecordings() {
@@ -125,7 +125,7 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
     }
 
     rpiSchedVideoListRecordings() {
-	rpissh "find $RPI_SCHED_VIDEO_DIR -type f"
+	rpissh "find $RPI_SCHED_VIDEO_DIR -type f | sort"
     }
 
 else
