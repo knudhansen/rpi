@@ -175,6 +175,8 @@ else
     }
 
     _rpiSchedUserToId() {
+	[ $# -lt 2 ] && return
+
 	local time=$1
 	local durationSec=$2
 
