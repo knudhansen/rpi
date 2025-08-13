@@ -178,6 +178,46 @@ else
 	echo "${RPI_SCHED_VIDEO_DIR}/${scheduleId}/$(date +rpicamvid_%Y_%m_%d_%H_%M_$durationSec).mp4"
     }
 
+    _rpiSchedGetStartTime() {
+	local sched=$1
+
+	date -d "$(echo $sched | awk -F'_' '{print $1}')" "+%s"
+    }
+
+    _rpiSchedGetDuration() {
+	local sched=$1
+
+	echo $sched | awk -F'_' '{print $2}'
+    }
+
+    # check overlaps. If no overlap, echos empty string, otherwise echos the latest of the 2 schedules
+    _rpiSchedCheckOverlap() {
+	local sched1=$1
+	local sched2=$2
+
+	local sched1Start=$(_rpiSchedGetStartTime $sched1)
+	local sched1End=$(($sched1Start + $(_rpiSchedGetDuration $sched1)))
+	local sched2Start=$(_rpiSchedGetStartTime $sched2)
+	local sched2End=$(($sched2Start + $(_rpiSchedGetDuration $sched2)))
+
+	# find max of start times
+	local maxStartTime=$sched1Start
+	local maxStartSched=$sched1 # remembering which is the latest of the 2 schedules
+	if [ $sched2Start -gt $maxStartTime ]; then
+	    maxStartTime=$sched2Start
+	    maxStartSched=$sched2
+	fi
+	# find min of end times
+	local minEndTime=$sched1End
+	if [ $sched2End -lt $minEndTime ]; then
+	    minEndTime=$sched2End
+	fi
+
+	if [ $minEndTime -gt $maxStartTime ]; then
+	    echo $maxStartSched
+	fi
+    }
+
     rpiSchedVideoAddDaily() {
 	local time=$1
 	local durationSec=$2
@@ -196,11 +236,21 @@ else
 	local runningUser=$(whoami)
 
 	local cronFileName=$(rpiSchedVideoCronFileName $time $durationSec)
+
+	# Fail on matching existing schedule
 	ls $cronFileName >/dev/null 2>&1
 	if [ $? -eq 0 ]; then
 	    echo a video is already scheduled at time $time for duration $duration.
 	    return 1
 	fi
+
+	local newSchedule="${time}_${durationSec}"
+	for preExistingSchedule in $(rpiSchedVideoListDaily | awk '{print $1 "_" $2}'); do
+	    local nonExecutedSchedule=$(_rpiSchedCheckOverlap $preExistingSchedule $newSchedule)
+	    if [ "nonExecutedSchedule" != "" ]; then
+		echo "WARNING: Schedule overlaps with pre-existing schedule $(echo $preExistingSchedule | tr '_' ' '). $nonExecutedSchedule will not happen!"
+	    fi
+	done
 
 	echo "$cronSchedule $runningUser . ~/$(basename $BASH_SOURCE) >>$RPI_LOG 2>&1 && rpiCaptureVideo \$(rpiSchedVideoFileName $scheduleId $durationSec) $durationSec >>$RPI_LOG 2>&1" | sudo tee $cronFileName >/dev/null
     }
