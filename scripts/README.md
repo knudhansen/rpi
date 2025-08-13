@@ -335,7 +335,6 @@ FIXME
 * add argument to be able to choose the dir where video are placed on host
 * how to control camera settings
 * currently, the chosen key is added to authorized_keys for every rpiSetup. Maybe remove duplicates?
-* tidy up the schedule stuff: different formats "HH:MM duration" (user friendly) "HH:MM_duration" (script friendly - no spaces) "MM HH * * * ...duration..." (cron)
 * tidy up error codes
 * DONE -- check that the Raspberry Pi device has been setup when calling the other functions
 * DONE -- have a handler to make sure that concurrent uses of the Raspberry Pi do not collide
@@ -347,3 +346,4 @@ FIXME
 * DONE -- place the scheduled video files somewhere a bit cleaner
 * DONE -- fail when trying to create the same schedule twice
 * DONE -- warning when adding a schedule overlaping with another schedule
+* DONE -- tidy up the schedule stuff: different formats "HH:MM duration" (user friendly) "HH:MM_duration" (script friendly - no spaces) "MM HH * * * ...duration..." (cron)

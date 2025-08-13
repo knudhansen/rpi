@@ -162,50 +162,69 @@ else
     RPI_SCHED_VIDEO_CRON_FILE_PREFIX="/etc/cron.d/rpicam_"
 
     rpiSchedVideoCronFileName() {
-	local time=$1
-	local durationSec=$2
+	local scheduleId=$1
 
-	local timeHours=${time%%:*}
-	local timeMinutes=${time##*:}
-
-	echo "${RPI_SCHED_VIDEO_CRON_FILE_PREFIX}${timeHours}_${timeMinutes}_${durationSec}"
+	echo "${RPI_SCHED_VIDEO_CRON_FILE_PREFIX}${scheduleId}"
     }
 
     rpiSchedVideoFileName() {
 	local scheduleId=$1
-	local durationSec=$2
 
+	local durationSec=$(_rpiSchedGetDurationSec $scheduleId)
 	echo "${RPI_SCHED_VIDEO_DIR}/${scheduleId}/$(date +rpicamvid_%Y_%m_%d_%H_%M_$durationSec).mp4"
     }
 
-    _rpiSchedGetStartTime() {
-	local sched=$1
+    _rpiSchedUserToId() {
+	local time=$1
+	local durationSec=$2
 
-	date -d "$(echo $sched | awk -F'_' '{print $1}')" "+%s"
+	echo "$(echo $time | tr ':' '_')_$durationSec"
     }
 
-    _rpiSchedGetDuration() {
-	local sched=$1
+    _rpiSchedGetCronSchedule() {
+	local scheduleId=$1
 
-	echo $sched | awk -F'_' '{print $2}'
+	echo $scheduleId | awk -F'_' '{print $2 " " $1 " * * *"}'
+    }
+
+    _rpiSchedGetStartTime() {
+	local schedId=$1
+
+	local time=$(echo $schedId | awk -F'_' '{printf $1 ":" $2}')
+	date -d "$time" "+%s"
+    }
+
+    _rpiSchedGetDurationSec() {
+	local schedId=$1
+
+	echo $schedId | awk -F'_' '{print $3}'
+    }
+
+    _rpiSchedGetUser() {
+        local schedId=$1
+
+        local timeHours=$(echo $schedId | awk -F'_' '{print $1}')
+        local timeMinutes=$(echo $schedId | awk -F'_' '{print $2}')
+        local durationSec=$(echo $schedId | awk -F'_' '{print $3}')
+        printf "%2d:%02d %d" $timeHours $timeMinutes $durationSec
     }
 
     # check overlaps. If no overlap, echos empty string, otherwise echos the latest of the 2 schedules
     _rpiSchedCheckOverlap() {
-	local sched1=$1
-	local sched2=$2
+	local sched1Id=$1
+	local sched2Id=$2
 
-	local sched1Start=$(_rpiSchedGetStartTime $sched1)
-	local sched1End=$(($sched1Start + $(_rpiSchedGetDuration $sched1)))
-	local sched2Start=$(_rpiSchedGetStartTime $sched2)
-	local sched2End=$(($sched2Start + $(_rpiSchedGetDuration $sched2)))
+	local sched1Start=$(_rpiSchedGetStartTime $sched1Id)
+	local sched1End=$(($sched1Start + $(_rpiSchedGetDurationSec $sched1Id)))
+	local sched2Start=$(_rpiSchedGetStartTime $sched2Id)
+	local sched2End=$(($sched2Start + $(_rpiSchedGetDurationSec $sched2Id)))
 
 	# find max of start times
 	local maxStartTime=$sched1Start
-	local maxStartSched=$sched1 # remembering which is the latest of the 2 schedules
+	local maxStartSched=$sched1Id # remembering which is the latest of the 2 schedules
 	if [ $sched2Start -gt $maxStartTime ]; then
 	    maxStartTime=$sched2Start
-	    maxStartSched=$sched2
+	    maxStartSched=$sched2Id
 	fi
 	# find min of end times
 	local minEndTime=$sched1End
@@ -223,19 +242,17 @@ else
 	local durationSec=$2
 
 	# setup cron job for recording video
-	local timeHours=${time%%:*}
-	local timeMinutes=${time##*:}
-	local scheduleId=${timeHours}_${timeMinutes}_${durationSec}
+	local scheduleId=$(_rpiSchedUserToId $time $durationSec)
 
 	# make sure that the folder for scheduled videos exists
-	local scheduleDir=$(dirname $(rpiSchedVideoFileName $scheduleId $durationSec))
+	local scheduleDir=$(dirname $(rpiSchedVideoFileName $scheduleId))
 	mkdir -p $scheduleDir
 
-	local cronSchedule="$timeMinutes $timeHours * * *"
+	local cronSchedule=$(_rpiSchedGetCronSchedule $scheduleId)
 	
 	local runningUser=$(whoami)
 
-	local cronFileName=$(rpiSchedVideoCronFileName $time $durationSec)
+	local cronFileName=$(rpiSchedVideoCronFileName $scheduleId)
 
 	# Fail on matching existing schedule
 	ls $cronFileName >/dev/null 2>&1
@@ -244,15 +261,14 @@ else
 	    return 1
 	fi
 
-	local newSchedule="${time}_${durationSec}"
-	for preExistingSchedule in $(rpiSchedVideoListDaily | awk '{print $1 "_" $2}'); do
-	    local nonExecutedSchedule=$(_rpiSchedCheckOverlap $preExistingSchedule $newSchedule)
-	    if [ "nonExecutedSchedule" != "" ]; then
-		echo "WARNING: Schedule overlaps with pre-existing schedule $(echo $preExistingSchedule | tr '_' ' '). $nonExecutedSchedule will not happen!"
+	for preExistingScheduleId in $(_rpiSchedUserToId $(rpiSchedVideoListDaily | awk '{print $1 " " $2}')); do
+	    local nonExecutedScheduleId=$(_rpiSchedCheckOverlap $preExistingScheduleId $scheduleId)
+	    if [ "$nonExecutedScheduleId" != "" ]; then
+		echo "WARNING: Schedule overlaps with pre-existing schedule $(_rpiSchedGetUser $preExistingScheduleId). $(_rpiSchedGetUser $nonExecutedScheduleId) will not happen!"
 	    fi
 	done
 
-	echo "$cronSchedule $runningUser . ~/$(basename $BASH_SOURCE) >>$RPI_LOG 2>&1 && rpiCaptureVideo \$(rpiSchedVideoFileName $scheduleId $durationSec) $durationSec >>$RPI_LOG 2>&1" | sudo tee $cronFileName >/dev/null
+	echo "$cronSchedule $runningUser . ~/$(basename $BASH_SOURCE) >>$RPI_LOG 2>&1 && rpiCaptureVideo \$(rpiSchedVideoFileName $scheduleId) $durationSec >>$RPI_LOG 2>&1" | sudo tee $cronFileName >/dev/null
     }
 
     rpiSchedVideoListDaily() {
@@ -260,11 +276,8 @@ else
 	local fileDir=$(dirname ${RPI_SCHED_VIDEO_CRON_FILE_PREFIX})
 	for filePath in $(find $fileDir -name "$filePrefix*" | sort); do
 	    local fileName=$(basename $filePath)
-	    local fileSuffix=${fileName#*_}
-	    local timeHours=$(echo $fileSuffix | awk -F'_' '{print $1}')
-	    local timeMinutes=$(echo $fileSuffix | awk -F'_' '{print $2}')
-	    local durationSec=$(echo $fileSuffix | awk -F'_' '{print $3}')
-	    printf "%2d:%02d %-6d -- $filePath: $(cat $filePath)\n" $timeHours $timeMinutes $durationSec
+	    local scheduleId=${fileName#*_}
+	    printf "%-12s -- $filePath: $(cat $filePath)\n" "$(_rpiSchedGetUser $scheduleId)"
 	done
     }
 
@@ -272,7 +285,7 @@ else
 	local time=$1
 	local durationSec=$2
 
-	sudo rm $(rpiSchedVideoCronFileName $time $durationSec)
+	sudo rm $(rpiSchedVideoCronFileName $(_rpiSchedUserToId $time $durationSec))
     }
 
     rpiSchedVideoRemoveAllDaily() {
