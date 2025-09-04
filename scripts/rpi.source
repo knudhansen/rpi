@@ -135,7 +135,10 @@ else
 
     ## functions on the Raspberry Pi ##
 
+    # lock file to make sure that there is only one video recording at a time
     RPICAM_FLOCK="$RPI_DIR/rpicam.flock"
+
+    # log file of what has happened on the Raspberry Pi
     RPI_LOG="$RPI_DIR/rpi.log"
 
     mkdir -p $RPI_DIR

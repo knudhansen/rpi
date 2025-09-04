@@ -13,6 +13,7 @@
 * add section about how rpi uses cron
 * add function to setup a video with custom cron schedule (to support non-daily schedules). Use the function from the daily scheduling functions. This may require renaming of the video files...
 * find a way to get the IP for the Raspberry Pi without having to run the raspberry Pi with display/keyboard/mouse
+* add function to show rpi log file
 * DONE -- check that the Raspberry Pi device has been setup when calling the other functions
 * DONE -- have a handler to make sure that concurrent uses of the Raspberry Pi do not collide
 * DONE -- cron setup helper functions
