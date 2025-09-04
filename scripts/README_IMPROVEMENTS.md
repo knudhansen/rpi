@@ -1,13 +1,11 @@
 # Improvement list
 
-* use tool to create a proper rpi server (like numbat does)
 * have a cleaner way of handling the files on the Raspberry Pi
 * maybe make the functions work on rpi as on remote host... Or is it too much abstraction?
 * make sure that there is space enough before recording a video. Investigate how much space is needed
 * investigate what additional parameter are needed for the video (resolution and exposure control)
 * make the calls from host to rpi a bit less stupid: i.e. use FUNCNAME instead of duplicating it in ssh
 * add number of executed schedules to the list function
-* add function to list the videos on host and raspberry pi
 * add argument to be able to choose the dir where video are placed on host
 * how to control camera settings
 * tidy up error codes
@@ -29,3 +27,5 @@
 * DONE -- add a function to fetch the scheduled videos (maybe including deleting them...)
 * DONE -- currently, the chosen key is added to authorized_keys for every rpiSetup. Maybe remove duplicates?
 * DONE -- Update the entry README.md. Maybe split the scripts/README.md into a README per section to make it easier to find information...
+* DONE -- add function to list the videos on host and raspberry pi
+* DROPPED -- use tool to create a proper rpi server (like numbat does). This is dropped for now as it would add a lot of code to maintain without much value.

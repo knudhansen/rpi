@@ -175,7 +175,17 @@ Delete all the scheduled recordings from the Raspberry Pi device
 rpiSchedVideoListRecordings
 ```
 
-List the scheduled recordings present on the Raspberry Pi device
+List the scheduled recordings present on the Host and the Raspberry Pi device. For each file hst indicate that it is present on the host and rpi indicates that it is present on the Raspberry Pi devide.
+
+```
+$ rpiSchedVideoListRecordings
+rpi_sched_video/22_52_15/rpicamvid_2025_08_13_22_52_15.mp4  hst rpi
+rpi_sched_video/22_52_16/rpicamvid_2025_09_02_22_52_16.mp4  rpi
+rpi_sched_video/22_52_16/rpicamvid_2025_09_03_22_52_16.mp4  rpi
+rpi_sched_video/23_03_16/rpicamvid_2025_08_13_23_03_16.mp4  hst rpi
+rpi_sched_video/23_03_16/rpicamvid_2025_09_02_23_03_16.mp4  rpi
+rpi_sched_video/23_03_16/rpicamvid_2025_09_03_23_03_16.mp4  rpi
+```
 
 ## Raspberry Pi functions
 

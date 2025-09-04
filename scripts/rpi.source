@@ -125,7 +125,10 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
     }
 
     rpiSchedVideoListRecordings() {
-	rpissh "find $RPI_SCHED_VIDEO_DIR -type f | sort"
+	local videoHostDir=~/rpi_$(rpiGetSerialNumber)/$RPI_SCHED_VIDEO_DIR
+
+	# maybe think about how this could be split into multiple lines...
+	cat <(rpissh "find $RPI_SCHED_VIDEO_DIR -type f" | awk '{print $0, "rpi"}') <(cd ${videoHostDir}/.. && find $RPI_SCHED_VIDEO_DIR -type f | awk '{print $0, "hst"}') | sort | awk 'BEGIN{file=""; presentOn=""}{if (file != "" && $1 != file) {print file,presentOn; file=$1; presentOn=""}; file=$1; presentOn=sprintf("%s %s", presentOn, $2);}END{print file,presentOn}'
     }
 
 else
