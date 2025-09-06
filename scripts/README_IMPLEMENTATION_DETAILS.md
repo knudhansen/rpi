@@ -1,3 +1,5 @@
+[main][./README.md]
+
 # Implementation details
 
 ## Overview
@@ -19,6 +21,15 @@ The `.rpi` directory contains some files with information about the targetted Ra
 * rpi.username containing the username of the user on the Raspberry Pi device
 * rpi.key containing the name of the key file for communicating with the Raspberry Pi device
 * the key files themselves (by default rpi_rsa and rpi_rsa.pub)
+
+```
+$ find ~/.rpi -type f | sort
+/Users/knudhansen/.rpi/rpi.ip
+/Users/knudhansen/.rpi/rpi.key
+/Users/knudhansen/.rpi/rpi.username
+/Users/knudhansen/.rpi/rpi_rsa
+/Users/knudhansen/.rpi/rpi_rsa.pub
+```
 
 ## Raspberry Pi device file organization
 

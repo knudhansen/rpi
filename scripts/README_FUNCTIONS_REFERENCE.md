@@ -127,8 +127,8 @@ rpiSchedVideoListDaily
 Lists the daily scheduled video captures. The format of the output is e.g.
 
 ```
-23:39 12     -- 39 23 * * * raspberrypi . ~/rpi.source >>/home/raspberrypi/.rpi/rpi.log 2>&1 && rpiCaptureVideo rpicamvid_2025_08_09_Aug_08_12 12 >>/home/raspberrypi/.rpi/rpi.log 2>&1
-23:37 7      -- 37 23 * * * raspberrypi . ~/rpi.source >>/home/raspberrypi/.rpi/rpi.log 2>&1 && rpiCaptureVideo rpicamvid_2025_08_09_Aug_08_7 7 >>/home/raspberrypi/.rpi/rpi.log 2>&1
+22:52 16     -- /etc/cron.d/rpicam_22_52_16: 52 22 * * * raspberrypi . ~/rpi.source >>/home/raspberrypi/.rpi/rpi.log 2>&1 && rpiCaptureVideo $(rpiSchedVideoFileName 22_52_16) 16 >>/home/raspberrypi/.rpi/rpi.log 2>&1
+23:03 16     -- /etc/cron.d/rpicam_23_03_16: 03 23 * * * raspberrypi . ~/rpi.source >>/home/raspberrypi/.rpi/rpi.log 2>&1 && rpiCaptureVideo $(rpiSchedVideoFileName 23_03_16) 16 >>/home/raspberrypi/.rpi/rpi.log 2>&1
 ```
 
 ### rpiSchedVideoRemoveDaily
