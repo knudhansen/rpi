@@ -1,3 +1,5 @@
+[main][main-link]
+
 # Improvement list
 
 * have a cleaner way of handling the files on the Raspberry Pi
@@ -30,3 +32,5 @@
 * DROPPED -- use tool to create a proper rpi server (like numbat does). This is dropped for now as it would add a lot of code to maintain without much value.
 * DROPPED -- make the calls from host to rpi a bit less stupid: i.e. use FUNCNAME instead of duplicating it in ssh. More hastle and untransparency than benifit
 * DROPPED -- maybe make the functions work on rpi as on remote host... Or is it too much abstraction? Not really needed
+
+[main-link]: ./README.md

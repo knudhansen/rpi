@@ -1,5 +1,4 @@
 [main][main-link]
-[main-link]: ./README.md
 
 # Implementation details
 
@@ -71,3 +70,5 @@ example of file:
 Communication with the Raspberry Pi device is done via SSH (and rsync, but that also uses SSH). In order to avoid being prompted a password for every communication, SSH communication uses an authentication key instead.
 
 When setting up the Raspberry Pi device, which key to use can be specified. If not, an rsa key stored under the .rpi directory will be used. If the specified key does not exist, it is created by rpiSetup and added to the .ssh/authorized_keys file on the Raspberry Pi device. Adding the key to the Raspberry Pi device requires entering the password for the specified user on the Raspberry Pi device, but after this, no password will be required when communicating with the Raspberry Pi from the host machine that ran rpiSetup.
+
+[main-link]: ./README.md

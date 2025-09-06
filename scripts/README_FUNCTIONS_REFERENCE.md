@@ -1,3 +1,5 @@
+[main][main-link]
+
 # RPI Functions Reference
 
 ## Host functions
@@ -190,3 +192,5 @@ rpi_sched_video/23_03_16/rpicamvid_2025_09_03_23_03_16.mp4  rpi
 ## Raspberry Pi functions
 
 FIXME
+
+[main-link]: ./README.md
