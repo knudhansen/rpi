@@ -1,13 +1,11 @@
 # Improvement list
 
 * have a cleaner way of handling the files on the Raspberry Pi
-* maybe make the functions work on rpi as on remote host... Or is it too much abstraction?
 * make sure that there is space enough before recording a video. Investigate how much space is needed
 * investigate what additional parameter are needed for the video (resolution and exposure control)
-* make the calls from host to rpi a bit less stupid: i.e. use FUNCNAME instead of duplicating it in ssh
 * add number of executed schedules to the list function
 * add argument to be able to choose the dir where video are placed on host
-* how to control camera settings
+* how to control camera settings. https://www.raspberrypi.com/news/raspberry-pi-camera-module-more-on-video-capture/
 * tidy up error codes
 * add documentation of what is in the .rpi directory
 * add section about how rpi uses cron
@@ -30,3 +28,5 @@
 * DONE -- Update the entry README.md. Maybe split the scripts/README.md into a README per section to make it easier to find information...
 * DONE -- add function to list the videos on host and raspberry pi
 * DROPPED -- use tool to create a proper rpi server (like numbat does). This is dropped for now as it would add a lot of code to maintain without much value.
+* DROPPED -- make the calls from host to rpi a bit less stupid: i.e. use FUNCNAME instead of duplicating it in ssh. More hastle and untransparency than benifit
+* DROPPED -- maybe make the functions work on rpi as on remote host... Or is it too much abstraction? Not really needed

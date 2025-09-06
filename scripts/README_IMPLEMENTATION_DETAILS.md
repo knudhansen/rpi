@@ -9,6 +9,17 @@ FIXME: maybe a figure to illustrate
 
 FIXME: Explain that the functionality is provided as bash functions and why this was chosen
 
+## Host file organization
+
+### .rpi directory
+
+The `.rpi` directory contains some files with information about the targetted Raspberry Pi device. These files are:
+
+* rpi.ip containing the IP address of the Raspberry Pi device
+* rpi.username containing the username of the user on the Raspberry Pi device
+* rpi.key containing the name of the key file for communicating with the Raspberry Pi device
+* the key files themselves (by default rpi_rsa and rpi_rsa.pub)
+
 ## Raspberry Pi device file organization
 
 On the Raspberry Pi device, all files used by the functions in this repo are located under the home directory of the used user on the Raspberry Pi device.
@@ -20,6 +31,10 @@ On the Raspberry Pi device, all files used by the functions in this repo are loc
 ```
 
 This is a file that is updated and sourced every time rpissh is used. This file makes sure that the functions defined for the Raspberry Pi in the rpi.source file are available and up-to-date. 
+
+### Cron schedules
+
+The scheduling of videos is done using Cron. This is done by adding files to the `/etc/cron.d` directory. One file is added for each schedule, and the files are named `rpicam_<hour of start>_<minute of start>_<duration in s>`.
 
 ### Scheduled video files
 
