@@ -47,6 +47,8 @@ This is a file that is updated and sourced every time rpissh is used. This file 
 
 The scheduling of videos is done using Cron. This is done by adding files to the `/etc/cron.d` directory. One file is added for each schedule, and the files are named `rpicam_<hour of start>_<minute of start>_<duration in s>`.
 
+In order to see all the scheduled videos, use the rpiSchedVideoListDaily.
+
 ### Scheduled video files
 
 ```
