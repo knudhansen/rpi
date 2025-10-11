@@ -73,6 +73,10 @@ if echo "$rpimodel" | grep -v Raspberry >/dev/null; then
 	rpissh "rpiGetSerialNumber"
     }
 
+    rpiLogCat() {
+	rpissh "rpiLogCat"
+    }
+
     rpiCapturePhoto() {
 	local file=$1
 
@@ -155,6 +159,10 @@ else
 
     rpiGetSerialNumber() {
 	cat /proc/cpuinfo | grep Serial | cut -d ' ' -f 2
+    }
+
+    rpiLogCat() {
+	cat $RPI_LOG
     }
 
     rpiLibcameravid() {

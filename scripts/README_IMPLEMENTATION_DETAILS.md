@@ -4,12 +4,20 @@
 
 ## Overview
 
-FIXME: explain that we use ssh, rsync and cron and why.
+In order to achieve the goal of the repository, the main tools the bash functions provided use are:
+
+* ssh: to communicate between the host and the Raspberry Pi device.
+
+* rsync: to download files from the Raspberry Pi device to the host
+
+* cron: to manage the scheduling of videos
+
 FIXME: maybe a figure to illustrate
 
 ## Bash functions
 
-FIXME: Explain that the functionality is provided as bash functions and why this was chosen
+We have chosen to use bash, as it makes it possible to easily and directly use the tools provided by
+both the host and the Raspberry Pi device.
 
 ## Host file organization
 
@@ -35,13 +43,27 @@ $ find ~/.rpi -type f | sort
 
 On the Raspberry Pi device, all files used by the functions in this repo are located under the home directory of the used user on the Raspberry Pi device.
 
+### .rpi directory
+
+The `.rpi` directory contains some files internally used by the RPI bash function run on the Raspberry Pi device. These files are:
+
+* rpicam.flock for ensuring that the camera is only used by one thread at a time
+* rpi.log file used to store information about the execution of the functions on the Raspberry Pi device.
+  Among others, the output of the actions scheduled by cron will append their output to this file.
+
+```
+$ rpissh "find ~/.rpi -type f | sort"
+/home/raspberrypi/.rpi/rpicam.flock
+/home/raspberrypi/.rpi/rpi.log
+```
+
 ### Function definition files
 
 ```
 ~/rpi.source
 ```
 
-This is a file that is updated and sourced every time rpissh is used. This file makes sure that the functions defined for the Raspberry Pi in the rpi.source file are available and up-to-date. 
+This is a file that is updated and sourced every time rpissh is used. This makes sure that the functions defined for the Raspberry Pi in the rpi.source file are available and up-to-date.
 
 ### Cron schedules
 
@@ -66,6 +88,15 @@ example of file:
 ```
 ~/rpi_sched_video/12_34_56/rpicamvid_2025_08_11_12_34_56.mp4
 ```
+
+### Log file
+
+```
+~/.rpi/rpi.log
+```
+
+This is the file where all the internal bash functions running on the Raspberry Pi device and
+the RPI action scheduled by cron write there output.
 
 ## Authentication
 

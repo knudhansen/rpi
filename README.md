@@ -1,6 +1,9 @@
 # Overview
 
-This repo contains resources to work with a Raspberry Pi, including using the Raspberry Pi camera.
+The RPI repository contains resources to work with a Raspberry Pi, including using the Raspberry Pi camera.
+
+It's main goal is to enable setting the Raspberry Pi up with a daily video schedule.
+
 
 # Bash functions
 
